@@ -2,7 +2,9 @@
 
 An interactive web page on small Fermi and Bose systems with evenly spaced, nondegenerate energy levels. With levels spaced like this, every microstate of either system is a partition of an integer. Counting and averaging these microstates is enough to see the Fermi–Dirac and Bose–Einstein distributions emerge.
 
-The page is supplementary material for the Statistical Physics 2 lecture on quantum statistics, and is meant to join the [Statistical Physics 2 interactive demos](https://lshlj82.github.io/statphys2-GNU/) ([source](https://github.com/lshlj82/statphys2-GNU)). It follows Problems 7.16 and 7.17 of D. V. Schroeder's *An Introduction to Thermal Physics* and the article by Arnaud *et al.* on which they are based. It is available in English (`index.html`) and Korean (`ko.html`), and each page links to the other.
+The page is supplementary material for the Statistical Physics 2 lecture on quantum statistics, and is meant to join the [Statistical Physics 2 interactive demos](https://lshlj82.github.io/statphys2-GNU/) ([source](https://github.com/lshlj82/statphys2-GNU)), as demo 4+ after [Boson vs Fermion](https://lshlj82.github.io/boson-vs-fermion/).
+
+**Live page:** https://lshlj82.github.io/FD-BE-from-isolated-systems/ (Korean: https://lshlj82.github.io/FD-BE-from-isolated-systems/ko.html) It follows Problems 7.16 and 7.17 of D. V. Schroeder's *An Introduction to Thermal Physics* and the article by Arnaud *et al.* on which they are based. It is available in English (`index.html`) and Korean (`ko.html`), and each page links to the other.
 
 ## What's on the page
 
