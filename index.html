@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fermions and bosons on an evenly spaced ladder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<script>try { const t = localStorage.getItem("netsci-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code','svg'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" async></script>
+<style>
+:root{
+  --bg:#F3F5F7; --panel:#FFFFFF; --ink:#1C2331; --muted:#5A6476; --rule:#D3D8DF; --faint:#E7EBF0;
+  --ferm:#2766A8; --ferm-soft:#DCE8F5; --bos:#B4581B; --bos-soft:#F6E2D2; --fit:#1C2331; --guess:#8A5DB0;
+  --can:#2E7D4F; --hl:#F5E15A;
+  --serif:"Source Serif 4","Source Serif Pro","Noto Serif KR","Apple SD Gothic Neo",Georgia,serif;
+  --sans:"IBM Plex Sans","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121722; --panel:#1A2030; --ink:#E5E9F0; --muted:#9AA4B5; --rule:#2D3546; --faint:#232B3C;
+    --ferm:#69A6E6; --ferm-soft:#1C2B40; --bos:#EE9A5A; --bos-soft:#3A2A1E; --fit:#E5E9F0; --guess:#B48DDA;
+    --can:#5CC38A; --hl:#6B5F1A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121722; --panel:#1A2030; --ink:#E5E9F0; --muted:#9AA4B5; --rule:#2D3546; --faint:#232B3C;
+  --ferm:#69A6E6; --ferm-soft:#1C2B40; --bos:#EE9A5A; --bos-soft:#3A2A1E; --fit:#E5E9F0; --guess:#B48DDA;
+  --can:#5CC38A; --hl:#6B5F1A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:1.075rem;line-height:1.62;-webkit-text-size-adjust:100%}
+:lang(ko) body, body:lang(ko){word-break:keep-all}
+main{max-width:1140px;margin:0 auto;padding:0 1.25rem 4rem}
+.prose{max-width:44rem}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;font-weight:700}
+h1{font-size:clamp(1.9rem,4.4vw,3rem);margin:1.6rem 0 .4rem;letter-spacing:-.01em;max-width:22ch}
+h2{font-size:1.6rem;margin:3.4rem 0 .6rem}
+h3{font-size:1.18rem;margin:1.6rem 0 .3rem}
+p{margin:.7rem 0}
+a{color:var(--ferm)}
+:focus-visible{outline:3px solid var(--ferm);outline-offset:2px}
+.lede{font-size:1.18rem;color:var(--muted);max-width:42rem;margin:.2rem 0 1.4rem}
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.6rem 1rem;margin-top:1.2rem;padding-right:52px}
+.course{font-family:var(--sans);font-size:.92rem;color:var(--muted);margin:0}
+.course a{color:inherit}
+.langlink{font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);border-radius:999px;padding:.38rem .9rem;color:var(--ink);text-decoration:none;background:var(--bg)}
+.langlink:hover{border-color:var(--ink)}
+.mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
+button.theme-btn{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);
+  width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:var(--panel);color:var(--ink);border:1px solid var(--rule);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+button.theme-btn:hover{border-color:var(--ink)}
+button.theme-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:1.1rem 1.25rem;margin:1.2rem 0}
+.ui{font-family:var(--sans);font-size:.92rem}
+.ctl{margin:.2rem 0 .9rem}
+.ctl label{display:flex;justify-content:space-between;gap:1rem;font-weight:500}
+.ctl output{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:400}
+input[type=range]{width:100%;accent-color:var(--ink);margin:.35rem 0 0}
+button.pill{font-family:var(--sans);font-size:.86rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:999px;padding:.34rem .85rem;cursor:pointer}
+button.pill:hover{border-color:var(--ink)}
+.qrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:end}
+.wbadge{font-family:var(--sans);text-align:right;line-height:1.15}
+.wbadge .n{font-size:2.2rem;font-weight:600;font-variant-numeric:tabular-nums}
+.wbadge .k{font-size:.82rem;color:var(--muted)}
+.caption{font-family:var(--sans);font-size:.9rem;min-height:2.6em;border-left:4px solid var(--hl);background:var(--bg);padding:.4rem .7rem;border-radius:0 8px 8px 0;margin:.4rem 0 .8rem}
+.gridwrap{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;background:var(--panel);margin:.4rem 0 1rem;-webkit-overflow-scrolling:touch}
+.gridwrap svg{display:block}
+.gridhead{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-family:var(--sans);font-size:.92rem;margin-top:.8rem}
+.gridhead b{font-weight:600}
+.gridhead .ferm{color:var(--ferm)} .gridhead .bos{color:var(--bos)}
+svg text{font-family:var(--sans)}
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem}
+@media (max-width:860px){.cols2{grid-template-columns:1fr}}
+.cols2 h3{font-family:var(--sans);font-size:1rem;margin:.1rem 0 .4rem}
+.kv{font-family:var(--sans);font-size:.9rem;font-variant-numeric:tabular-nums;margin:.5rem 0;display:grid;grid-template-columns:auto auto;gap:.15rem 1rem;justify-content:start}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:.3rem 1rem;font-family:var(--sans);font-size:.84rem;color:var(--muted);margin:.3rem 0}
+.legend .sw{display:inline-block;width:.8rem;height:.8rem;border-radius:2px;vertical-align:-1px;margin-right:.3rem}
+.legend .ln{display:inline-block;width:1.3rem;height:0;border-top:2.5px solid;vertical-align:3px;margin-right:.3rem}
+.legend .ln.d{border-top-style:dashed}
+.tablewrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--rule);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:.5rem .75rem;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;color:var(--muted);font-size:.84rem}
+tbody tr:last-child td{border-bottom:0}
+.note{font-family:var(--sans);font-size:.86rem;color:var(--muted)}
+pre{font-family:var(--mono);font-size:.86rem;line-height:1.5;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:.9rem 1rem;overflow-x:auto;margin:1rem 0}
+code{font-family:var(--mono);font-size:.92em}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;font-family:var(--sans);font-size:.86rem}
+.seg button{border:0;background:transparent;color:var(--ink);padding:.32rem .8rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding-top:1.4rem;font-family:var(--sans);font-size:.9rem;color:var(--muted)}
+footer p,footer ol{max-width:48rem}
+footer ol{padding-left:1.3rem}
+footer li{margin:.35rem 0}
+</style>
+</head>
+<body>
+<button id="themeBtn" class="theme-btn" type="button" aria-label="Switch to dark mode"></button>
+<main>
+<header class="topbar">
+  <p class="course"><a href="https://lshlj82.github.io/statphys2-GNU/">Statistical Physics 2</a>, supplementary material: quantum statistics by counting</p>
+  <a class="langlink" href="ko.html" hreflang="ko" lang="ko">한국어</a>
+</header>
+<h1>Fermions and bosons on an evenly spaced ladder</h1>
+<p class="lede">With evenly spaced energy levels, every microstate of a small Fermi or Bose system is a partition of an integer. Count them, average over them, and the Fermi–Dirac and Bose–Einstein distributions start to appear, even for a handful of energy units.</p>
+
+<section class="panel ui" aria-label="Microstate explorer">
+  <div class="qrow">
+    <div class="ctl" style="margin:0">
+      <label for="q"><span>Energy above the ground state, \(q\) (units of \(\epsilon\))</span> <output id="qOut"></output></label>
+      <input id="q" type="range" min="0" max="12" step="1" value="6">
+    </div>
+    <div class="wbadge"><div class="n" id="wOut"></div><div class="k">microstates \(\Omega(q)\)</div></div>
+  </div>
+  <div class="caption" id="caption" aria-live="polite"></div>
+  <div class="gridhead"><span><b class="ferm">Fermions</b>: filled dots are occupied levels</span><span class="note">Right column: occupation probability</span></div>
+  <div class="gridwrap"><svg id="gridF" role="img" aria-label="Fermion microstates"></svg></div>
+  <div class="gridhead"><span><b class="bos">Bosons</b>: numbers of bosons in each level (\(N\) large)</span><span class="note">Right column: average occupancy</span></div>
+  <div class="gridwrap"><svg id="gridB" role="img" aria-label="Boson microstates"></svg></div>
+  <p class="note" style="margin:0">Hover over or tap a column to see the partition it represents. The same column is highlighted in both diagrams.</p>
+</section>
+
+<div class="prose">
+<h2>The model</h2>
+<p>Take single-particle levels \(0, \epsilon, 2\epsilon, \dots\), nondegenerate and evenly spaced, as for a one-dimensional harmonic oscillator, and an isolated system of \(N\) identical particles of a single spin orientation. Let \(q\) count the energy units above the ground state. By the fundamental assumption, all microstates with the same \(q\) are equally likely.</p>
+<p><strong>Fermions</strong> (with \(q < N\)). In the ground state the lowest \(N\) levels are filled. Any excited state is reached by lifting the top electron by \(\lambda_1\) levels, the next one by \(\lambda_2 \le \lambda_1\), and so on; the shifts must not increase going down, or two fermions would land on the same level. (Below, levels are labeled by \(\ell\), with \(\ell = 0\) the highest level filled at \(q = 0\).) So a microstate is a list \(\lambda_1 \ge \lambda_2 \ge \cdots\) with \(\sum \lambda_i = q\): a partition of \(q\).</p>
+<p><strong>Bosons</strong> (with \(N\) large). Each boson can sit at any level. A microstate is fixed by the excitation energies of the bosons that left the ground level, again a list of positive integers summing to \(q\), in any order: again a partition of \(q\).</p>
+<p>So both systems have the same number of microstates, the partition number:</p>
+\[ \Omega(q) = p(q):\quad 1,\ 1,\ 2,\ 3,\ 5,\ 7,\ 11,\ 15,\ 22,\ 30,\ 42,\ 56,\ 77,\ \dots \]
+<p>The occupancy of a level is the number of microstates (or bosons) found there, divided by \(\Omega(q)\). For \(q = 6\), the fermion levels just above the Fermi gap are occupied with probabilities \(5/11, 4/11, 3/11, 2/11, 1/11, 1/11, 0\), mirrored by \(6/11, 7/11, \dots, 1\) just below. The boson levels \(j = 1, 2, 3, \dots\) hold on average \(19/11, 8/11, 4/11, 2/11, 1/11, 1/11\) bosons.</p>
+</div>
+
+<h2>Fitting the occupancies</h2>
+<div class="prose">
+<p>In the thermodynamic limit these occupancies should follow</p>
+\[ \bar n_{\rm FD}(\varepsilon) = \frac{1}{e^{(\varepsilon-\mu)/(k_BT)}+1}, \qquad \bar n_{\rm BE}(\varepsilon) = \frac{1}{e^{(\varepsilon-\mu)/(k_BT)}-1}. \]
+<p>Even for small \(q\), we can ask which \(\mu\) and \(T\) make the curve pass closest to the exact points. The page does an unweighted least-squares fit (minimizing the sum of squared residuals with the Nelder–Mead method). Move the sliders to try your own guess against the best fit. Energies are in units of \(\epsilon\) and temperatures in units of \(\epsilon/k_B\).</p>
+</div>
+<div class="cols2">
+  <div class="panel ui" style="margin:0">
+    <h3 style="color:var(--ferm)">Fermions</h3>
+    <svg id="plotFD" viewBox="0 0 520 320" role="img" aria-label="Fermion occupation probability and Fermi–Dirac fit"></svg>
+    <div class="legend"><span><span class="sw" style="background:var(--ferm)"></span>Exact</span><span><span class="ln" style="border-color:var(--fit)"></span>Best fit</span><span><span class="ln d" style="border-color:var(--guess)"></span>Your guess</span></div>
+    <dl class="kv">
+      <dt>Best fit \(\mu\)</dt><dd id="fdMu"></dd>
+      <dt>Best fit \(k_BT\)</dt><dd id="fdT"></dd>
+      <dt>Residual sum of squares</dt><dd id="fdR"></dd>
+    </dl>
+    <div class="ctl"><label for="gFmu"><span>Your \(\mu\)</span> <output id="gFmuOut"></output></label><input id="gFmu" type="range" min="-2" max="3" step="0.05" value="1"></div>
+    <div class="ctl"><label for="gFT"><span>Your \(k_BT\)</span> <output id="gFTOut"></output></label><input id="gFT" type="range" min="0.2" max="6" step="0.05" value="1.5"></div>
+    <p class="note" style="margin:0">Your residual sum of squares: <span id="gFR"></span>. Energies are measured from the highest level filled at \(q = 0\) (\(\ell = 0\)), so \(\mu = 0.5\) means halfway to the next level, \(\mu = (N - \tfrac12)\epsilon\) above the lowest level.</p>
+  </div>
+  <div class="panel ui" style="margin:0">
+    <h3 style="color:var(--bos)">Bosons</h3>
+    <svg id="plotBE" viewBox="0 0 520 320" role="img" aria-label="Boson occupancy and Bose–Einstein fit"></svg>
+    <div class="legend"><span><span class="sw" style="background:var(--bos)"></span>Exact</span><span><span class="ln" style="border-color:var(--fit)"></span>Best fit</span><span><span class="ln d" style="border-color:var(--guess)"></span>Your guess</span></div>
+    <dl class="kv">
+      <dt>Best fit \(\mu\)</dt><dd id="beMu"></dd>
+      <dt>Best fit \(k_BT\)</dt><dd id="beT"></dd>
+      <dt>Residual sum of squares</dt><dd id="beR"></dd>
+    </dl>
+    <div class="ctl"><label for="gBmu"><span>Your \(\mu\)</span> <output id="gBmuOut"></output></label><input id="gBmu" type="range" min="-2" max="-0.01" step="0.01" value="-0.5"></div>
+    <div class="ctl"><label for="gBT"><span>Your \(k_BT\)</span> <output id="gBTOut"></output></label><input id="gBT" type="range" min="0.2" max="6" step="0.05" value="1.5"></div>
+    <p class="note" style="margin:0">Your residual sum of squares: <span id="gBR"></span>. The ground level \(j = 0\) holds almost all \(N\) bosons and is off the chart. Keeping it finite requires \(\mu < 0\), so the fit is restricted to negative \(\mu\); with \(N\) large the best \(\mu\) lies just below zero.</p>
+  </div>
+</div>
+
+<div class="prose">
+<h3>Fitting with Python</h3>
+<p>Any tool that does nonlinear least squares will do. With SciPy, for \(q = 6\):</p>
+</div>
+<pre><code>import numpy as np
+from scipy.optimize import curve_fit
+
+# Fermions: level energies measured from the top level filled at q = 0
+e = np.arange(-6, 8)
+P = np.array([11, 10, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 0]) / 11
+fd = lambda e, mu, T: 1 / (np.exp((e - mu) / T) + 1)
+(mu, T), _ = curve_fit(fd, e, P, p0=[0.5, 2])
+print(mu, T)          # 0.500  2.245
+
+# Bosons: levels j = 1, ..., 7 (the ground level is left out)
+j = np.arange(1, 8)
+n = np.array([19, 8, 4, 2, 1, 1, 0]) / 11
+be = lambda e, mu, T: 1 / (np.exp((e - mu) / T) - 1)
+(mu, T), _ = curve_fit(be, j, n, p0=[-0.1, 2], bounds=([-10, 0.1], [0, 50]))
+print(mu, T)          # -0.040  2.284</code></pre>
+<div class="prose">
+<p class="note">The fitted values depend somewhat on which levels are included and on how the residuals are weighted. Here the fermion fit uses all levels from \(-q\) to \(q+1\), and the boson fit uses \(j = 1\) to \(q+1\), which reproduces the numbers shown on this page.</p>
+</div>
+
+<h2>Entropy and temperature</h2>
+<div class="prose">
+<p>Since fermions and bosons have the same \(\Omega(q)\), they also share the entropy \(S/k_B = \ln \Omega(q)\). The temperature follows from the slope,</p>
+\[ \frac{1}{T} = \frac{\partial S}{\partial U} \quad\Longrightarrow\quad k_BT \approx \epsilon\,\frac{\Delta q}{\Delta (S/k_B)}. \]
+<p>For large \(q\), the Hardy–Ramanujan formula gives \(p(q) \approx e^{\pi\sqrt{2q/3}}/(4\sqrt3\,q)\), so \(S/k_B \approx \pi\sqrt{2q/3}\) and \(k_BT \approx \sqrt{6q}\,\epsilon/\pi\), the result quoted by Arnaud <em>et al.</em></p>
+</div>
+<div class="panel ui">
+  <div class="cols2">
+    <div>
+      <svg id="plotS" viewBox="0 0 520 330" role="img" aria-label="Entropy versus energy"></svg>
+      <div class="legend"><span><span class="sw" style="background:var(--ink)"></span>\(\ln\Omega(q)\)</span><span><span class="ln d" style="border-color:var(--muted)"></span>Hardy–Ramanujan</span><span><span class="ln" style="border-color:var(--ferm)"></span>Backward secant</span><span><span class="ln" style="border-color:var(--bos)"></span>Central secant</span></div>
+    </div>
+    <div>
+      <p style="margin-top:0">Temperature estimates at \(q =\) <b id="qT"></b>, in units of \(\epsilon/k_B\):</p>
+      <div class="tablewrap" style="margin-top:.4rem">
+        <table>
+          <tbody>
+            <tr><td>Fermi–Dirac fit</td><td id="tFD"></td></tr>
+            <tr><td>Bose–Einstein fit</td><td id="tBE"></td></tr>
+            <tr><td>Slope from \(q-1\) to \(q\)</td><td id="tBack"></td></tr>
+            <tr><td>Slope from \(q-1\) to \(q+1\)</td><td id="tCen"></td></tr>
+            <tr><td>Thermodynamic limit \(\sqrt{6q}/\pi\)</td><td id="tTh"></td></tr>
+            <tr><td>Canonical ensemble with \(\langle q\rangle = q\)</td><td id="tCan"></td></tr>
+            <tr><td>Grand canonical (Fermi–Dirac) with \(\langle q\rangle = q\)</td><td id="tGC"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">At \(q = 6\), for example, the estimates cluster around \(k_BT \approx 2\epsilon\) but range from about 1.9 to 2.6. A small isolated system has no sharp temperature; the different definitions converge only as \(q\) grows.</p>
+    </div>
+  </div>
+</div>
+
+<h2>Isolated, canonical, and grand canonical</h2>
+<div class="prose">
+<p>Arnaud <em>et al.</em> compare three situations for the fermion ladder with the same (average) energy. The <strong>isolated</strong> system has exactly \(q\) units. In the <strong>canonical</strong> ensemble the system exchanges energy with a reservoir, and the occupancy of the level at \(\kappa = \ell - \tfrac12 > 0\) above the Fermi gap becomes</p>
+\[ \langle N_\kappa\rangle_c = -\sum_{i\ge1} (-1)^i\, x^{\,i(\kappa + i/2)}, \qquad x = e^{-\epsilon/(k_BT)}, \qquad \langle q\rangle = \sum_{n\ge1}\frac{n\,x^n}{1-x^n}. \]
+<p>In the <strong>grand canonical</strong> ensemble it also exchanges particles, and the occupancy is exactly Fermi–Dirac, \(\langle N_\kappa\rangle_{\rm FD} = 1/(x^{-\kappa}+1)\), with \(\langle q\rangle_{\rm FD} = \sum_{n\ \rm odd} n/(x^{-n/2}+1)\). The three agree in the thermodynamic limit, but for small systems they differ, most visibly in the tails.</p>
+</div>
+<div class="panel ui">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div class="legend" style="margin:0"><span><span class="sw" style="background:var(--ferm)"></span>Isolated (exact count)</span><span><span class="ln" style="border-color:var(--can)"></span>Canonical</span><span><span class="ln d" style="border-color:var(--fit)"></span>Grand canonical (Fermi–Dirac)</span></div>
+    <div class="seg" role="group" aria-label="Vertical scale"><button id="linBtn" aria-pressed="true">Linear</button><button id="logBtn" aria-pressed="false">Log</button></div>
+  </div>
+  <svg id="plotEns" viewBox="0 0 1000 340" role="img" aria-label="Occupancies in the three ensembles"></svg>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>\(\kappa\)</th><th>Isolated</th><th>Canonical</th><th>Grand canonical</th></tr></thead>
+      <tbody id="ensRows"></tbody>
+    </table>
+  </div>
+  <p class="note" id="ensNote"></p>
+</div>
+
+<div class="prose">
+<h2>Remarks</h2>
+<p><strong>Why the fermion and boson counts agree.</strong> The same partition describes both systems, and the correspondence goes deeper. Exchanging particles and holes and reversing the energy scale maps one fermion microstate to another (its conjugate), which corresponds to transposing the partition's Young diagram. Schönhammer and Meden used this kind of correspondence to discuss fermion–boson "transmutation" in one dimension.</p>
+<p><strong>How good is Fermi–Dirac for a small isolated system?</strong> Near the Fermi level the fit is already reasonable at \(q = 6\), but the exact occupancy drops to zero at \(\kappa = q + \tfrac12\), where Fermi–Dirac still predicts a small positive value. Arnaud <em>et al.</em> show that even at \(q = 6000\) the isolated-system tail differs from Fermi–Dirac by more than 10% at occupancies around \(10^{-4}\).</p>
+<p><strong>Heat capacity.</strong> In the thermodynamic limit \(U - U_0 \approx \pi^2 (k_BT)^2/6\epsilon\), so \(C = dU/dT \approx \pi^2 k_B^2 T/3\epsilon\): the electronic heat capacity is linear in \(T\), as for electrons in a metal.</p>
+</div>
+
+<footer>
+<p>This page was created by Claude Opus 5.5 (Anthropic) as supplementary material for <a href="https://lshlj82.github.io/statphys2-GNU/">Statistical Physics 2</a>. The explanations, numerical results, and interactive figures were generated by the model and should be read alongside the sources below.</p>
+<ol>
+  <li>D. V. Schroeder, <em>An Introduction to Thermal Physics</em> (Addison-Wesley, 2000), Problems 7.16 and 7.17.</li>
+  <li>J. Arnaud, J. M. Boé, L. Chusseau, and F. Philippe, “Illustration of the Fermi–Dirac statistics,” <em>American Journal of Physics</em> <strong>67</strong>, 215–221 (1999).</li>
+  <li>K. Schönhammer and V. Meden, “Fermion–boson transmutation and comparison of statistical ensembles in one dimension,” <em>American Journal of Physics</em> <strong>64</strong>, 1168–1176 (1996), as cited in Ref. 2.</li>
+</ol>
+</footer>
+</main>
+
+<script>
+(function(){
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const KO = document.documentElement.lang === 'ko';
+const TX = KO ? {
+  part:'분할', ms:'미시 상태', of:'/', ferm:'페르미온: 맨 위 입자부터 차례로 ', fermTail:'칸씩 위로 올림', bos:'보손: 바닥 준위를 떠난 보손들이 준위 ', bosTail:'에 있음',
+  ground:'바닥 상태 (모든 입자가 가장 낮은 준위들에)', hover:'열 위에 마우스를 올리거나 눌러 보세요.',
+  xF:'준위 ℓ (ℓ = 0: q = 0일 때 채워진 최고 준위)', yF:'점유 확률', xB:'준위 j', yB:'평균 점유수', xS:'에너지 q (단위 ϵ)', yS:'엔트로피 S/k_{B}',
+  xE:'페르미 간격 위의 준위 κ', yE:'점유 확률', na:'—', small:'q < 2에서는 맞춤이 의미 없습니다',
+  ensNote: q => `q = ${q}일 때 정준 앙상블과 대정준 앙상블은 평균 에너지가 ⟨q⟩ = ${q}가 되도록 온도를 정했습니다. κ < 0 쪽은 대칭(⟨N_−κ⟩ = 1 − ⟨N_κ⟩)이므로 생략했습니다.`
+} : {
+  part:'partition', ms:'Microstate', of:'of', ferm:'Fermions: the top particles are lifted by ', fermTail:' levels', bos:'Bosons: excited bosons sit at levels ', bosTail:'',
+  ground:'Ground state: all particles in the lowest levels', hover:'Hover over or tap a column.',
+  xF:'Level ℓ (ℓ = 0: top level filled at q = 0)', yF:'Occupation probability', xB:'Level j', yB:'Average occupancy', xS:'Energy q (units of ϵ)', yS:'Entropy S/k_{B}',
+  xE:'Level κ above the Fermi gap', yE:'Occupancy', na:'—', small:'A fit is not meaningful for q < 2',
+  ensNote: q => `For q = ${q}, the canonical and grand canonical temperatures are chosen so that the average energy is ⟨q⟩ = ${q}. Levels with κ < 0 are omitted because of the symmetry ⟨N_−κ⟩ = 1 − ⟨N_κ⟩.`
+};
+
+function el(tag, attrs, parent, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const fmt = (x, d=3) => isFinite(x) ? x.toFixed(d) : TX.na;
+
+/* ---------- partitions ---------- */
+const partCache = {};
+function partitions(n){
+  if (partCache[n]) return partCache[n];
+  const out = [];
+  (function rec(rem, max, cur){
+    if (rem === 0){ out.push(cur.slice()); return; }
+    for (let k = Math.min(rem, max); k >= 1; k--){ cur.push(k); rec(rem-k, k, cur); cur.pop(); }
+  })(n, n, []);
+  return (partCache[n] = out);
+}
+const Wq = q => q < 0 ? 0 : partitions(q).length;
+
+/* ---------- exact occupancies ---------- */
+// Fermions: level l relative to the top level filled at q = 0 (l = 0); rows l = -q ... q+1
+function fermionData(q){
+  const P = partitions(q), W = P.length, levels = [];
+  for (let l = q+1; l >= -q; l--) levels.push(l);
+  const occ = P.map(lam => {
+    const s = new Set();
+    for (let i = 0; i <= q+1; i++) s.add(-i + (lam[i] || 0));
+    return s;
+  });
+  const m = levels.map(l => occ.reduce((a,s)=>a + (s.has(l)?1:0), 0));
+  return {P, W, levels, occ, m};
+}
+// Bosons: levels j = 0 ... q; multiplicity of part j
+function bosonData(q){
+  const P = partitions(q), W = P.length, levels = [];
+  for (let j = q; j >= 0; j--) levels.push(j);
+  const cnt = P.map(lam => { const c = {}; lam.forEach(v => c[v] = (c[v]||0)+1); return c; });
+  const n = levels.map(j => j === 0 ? null : cnt.reduce((a,c)=>a + (c[j]||0), 0));
+  const parts = P.reduce((a,l)=>a + l.length, 0);
+  return {P, W, levels, cnt, n, parts};
+}
+
+/* ---------- grids ---------- */
+let hoverCol = -1;
+function frac(a, W){ return W === 1 ? String(a) : (a === 0 ? '0' : a + '/' + W); }
+function drawGrids(q){
+  const F = fermionData(q), B = bosonData(q), W = F.W;
+  const colW = 25, labW = 40, occW = 92, pad = 10;
+  // Fermions
+  const rowH = 17, svgF = $('gridF');
+  while (svgF.firstChild) svgF.removeChild(svgF.firstChild);
+  const wF = labW + W*colW + occW + pad, hF = F.levels.length*rowH + 30;
+  svgF.setAttribute('width', wF); svgF.setAttribute('height', hF); svgF.setAttribute('viewBox', `0 0 ${wF} ${hF}`);
+  const gHL = el('g', {}, svgF);
+  el('text',{x:labW-8,y:14,'text-anchor':'end','font-size':11,style:'fill:var(--muted)'},svgF,'ℓ');
+  for (let c=0;c<W;c++) el('text',{x:labW+c*colW+colW/2,y:14,'text-anchor':'middle','font-size':10,style:'fill:var(--muted)'},svgF,String(c+1));
+  F.levels.forEach((l, r) => {
+    const y = 22 + r*rowH + rowH/2;
+    el('text',{x:labW-8,y:y+4,'text-anchor':'end','font-size':11,style:'fill:var(--muted)'},svgF,(l>0?'+':'')+l);
+    if (l === 0) el('line',{x1:labW-4,x2:labW+W*colW+4,y1:y-rowH/2,y2:y-rowH/2,style:'stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3'},svgF);
+    for (let c=0;c<W;c++){
+      const on = F.occ[c].has(l);
+      el('circle',{cx:labW+c*colW+colW/2,cy:y,r:5,style:on?'fill:var(--ferm)':'fill:none;stroke:var(--muted);stroke-width:1;opacity:.55'},svgF);
+    }
+    el('text',{x:labW+W*colW+12,y:y+4,'font-size':11.5,style:'fill:var(--ink)'},svgF,frac(F.m[r], W));
+  });
+  // Bosons
+  const rowB = 19, svgB = $('gridB');
+  while (svgB.firstChild) svgB.removeChild(svgB.firstChild);
+  const hB = B.levels.length*rowB + 30;
+  svgB.setAttribute('width', wF); svgB.setAttribute('height', hB); svgB.setAttribute('viewBox', `0 0 ${wF} ${hB}`);
+  const gHLB = el('g', {}, svgB);
+  el('text',{x:labW-8,y:14,'text-anchor':'end','font-size':11,style:'fill:var(--muted)'},svgB,'j');
+  for (let c=0;c<W;c++) el('text',{x:labW+c*colW+colW/2,y:14,'text-anchor':'middle','font-size':10,style:'fill:var(--muted)'},svgB,String(c+1));
+  B.levels.forEach((j, r) => {
+    const y = 22 + r*rowB + rowB/2;
+    el('text',{x:labW-8,y:y+4,'text-anchor':'end','font-size':11,style:'fill:var(--muted)'},svgB,String(j));
+    for (let c=0;c<W;c++){
+      const cx = labW+c*colW+colW/2;
+      if (j === 0){
+        el('text',{x:cx,y:y+4,'text-anchor':'middle','font-size':9,style:'fill:var(--muted)'},svgB,'N−'+B.P[c].length);
+      } else {
+        const v = B.cnt[c][j] || 0;
+        el('text',{x:cx,y:y+4,'text-anchor':'middle','font-size':v?12.5:11,'font-weight':v?600:400,style:v?'fill:var(--bos)':'fill:var(--muted);opacity:.45'},svgB,v?String(v):'·');
+      }
+    }
+    el('text',{x:labW+W*colW+12,y:y+4,'font-size':11.5,style:'fill:var(--ink)'},svgB, j===0 ? 'N − '+frac(B.parts, W) : frac(B.n[r], W));
+  });
+  // hit areas and highlight
+  function setHL(c){
+    hoverCol = c;
+    [[gHL, hF],[gHLB, hB]].forEach(([g,h])=>{ while (g.firstChild) g.removeChild(g.firstChild);
+      if (c >= 0) el('rect',{x:labW+c*colW,y:18,width:colW,height:h-20,rx:4,style:'fill:var(--hl);opacity:.55'},g); });
+    caption(q, c);
+  }
+  [svgF, svgB].forEach((svg, k) => {
+    const h = k ? hB : hF;
+    for (let c=0;c<W;c++){
+      const r = el('rect',{x:labW+c*colW,y:0,width:colW,height:h,style:'fill:transparent;cursor:pointer',tabindex:0},svg);
+      r.addEventListener('mouseenter', ()=>setHL(c));
+      r.addEventListener('focus', ()=>setHL(c));
+      r.addEventListener('click', ()=>setHL(c));
+    }
+  });
+  setHL(hoverCol < W ? hoverCol : -1);
+}
+function caption(q, c){
+  const P = partitions(q), cap = $('caption');
+  if (q === 0){ cap.textContent = TX.ground; return; }
+  if (c < 0){ cap.textContent = TX.hover; return; }
+  const lam = P[c];
+  cap.innerHTML = `<b>${TX.ms} ${c+1} ${TX.of} ${P.length}</b> · ${TX.part} ${q} = ${lam.join(' + ')}<br>` +
+    `<span style="color:var(--ferm)">${TX.ferm}${lam.join(', ')}${TX.fermTail}</span> · <span style="color:var(--bos)">${TX.bos}${lam.slice().reverse().join(', ')}${TX.bosTail}</span>`;
+}
+
+/* ---------- Nelder–Mead ---------- */
+function nelderMead(f, x0, step, iters=600){
+  const n = x0.length; let S = [x0.slice()];
+  for (let i=0;i<n;i++){ const x = x0.slice(); x[i] += step[i]; S.push(x); }
+  let F = S.map(f);
+  for (let it=0; it<iters; it++){
+    const idx = F.map((v,i)=>i).sort((a,b)=>F[a]-F[b]); S = idx.map(i=>S[i]); F = idx.map(i=>F[i]);
+    const c = Array(n).fill(0); for (let i=0;i<n;i++) for (let k=0;k<n;k++) c[k] += S[i][k]/n;
+    const xr = c.map((v,k)=>v + (v - S[n][k])), fr = f(xr);
+    if (fr < F[0]){ const xe = c.map((v,k)=>v + 2*(v - S[n][k])), fe = f(xe); if (fe < fr){ S[n]=xe; F[n]=fe; } else { S[n]=xr; F[n]=fr; } }
+    else if (fr < F[n-1]){ S[n]=xr; F[n]=fr; }
+    else { const xc = c.map((v,k)=>v + 0.5*(S[n][k] - v)), fc = f(xc);
+      if (fc < F[n]){ S[n]=xc; F[n]=fc; } else { for (let i=1;i<=n;i++){ S[i] = S[i].map((v,k)=>S[0][k] + 0.5*(v - S[0][k])); F[i] = f(S[i]); } } }
+    if (Math.abs(F[n]-F[0]) < 1e-15 && it > 50) break;
+  }
+  const best = F.indexOf(Math.min(...F)); return {x:S[best], f:F[best]};
+}
+const fd = (e, mu, T) => 1/(Math.exp((e-mu)/T)+1);
+const be = (e, mu, T) => 1/(Math.exp((e-mu)/T)-1);
+function fitFD(xs, ys){
+  const sse = p => { const T = Math.exp(p[1]); return xs.reduce((a,x,i)=>a + (fd(x,p[0],T)-ys[i])**2, 0); };
+  const r = nelderMead(sse, [0.5, Math.log(2)], [0.3, 0.3]);
+  return {mu:r.x[0], T:Math.exp(r.x[1]), sse:r.f};
+}
+function fitBE(xs, ys){
+  const sse = p => { const mu = -Math.exp(p[0]), T = Math.exp(p[1]); return xs.reduce((a,x,i)=>a + (be(x,mu,T)-ys[i])**2, 0); };
+  let best = null;
+  for (const a0 of [Math.log(0.01), Math.log(0.1), Math.log(1)]){ const r = nelderMead(sse, [a0, Math.log(2)], [0.5, 0.3], 900); if (!best || r.f < best.f) best = r; }
+  return {mu:-Math.exp(best.x[0]), T:Math.exp(best.x[1]), sse:best.f};
+}
+
+/* ---------- plotting ---------- */
+function niceTicks(a, b, n){
+  const span = b - a; if (span <= 0) return [a];
+  const raw = span/n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw) || 10*mag;
+  const out = []; for (let t = Math.ceil(a/step)*step; t <= b + 1e-9*step; t += step) out.push(+t.toFixed(10));
+  return out;
+}
+function plot(svg, o){
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const vb = svg.viewBox.baseVal, W = vb.width, H = vb.height, m = {l:56, r:14, t:14, b:46};
+  const ty = o.ylog ? (y => Math.log10(Math.max(y, 1e-12))) : (y => y);
+  const y0 = ty(o.ymin), y1 = ty(o.ymax);
+  const X = x => m.l + (x - o.xmin)/(o.xmax - o.xmin)*(W - m.l - m.r);
+  const Y = y => H - m.b - (ty(y) - y0)/(y1 - y0)*(H - m.t - m.b);
+  const g = el('g', {}, svg);
+  (o.xticks || niceTicks(o.xmin, o.xmax, 6)).forEach(t=>{
+    el('line',{x1:X(t),x2:X(t),y1:m.t,y2:H-m.b,style:'stroke:var(--faint);stroke-width:1'},g);
+    el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle','font-size':12,style:'fill:var(--muted)'},g,String(t));
+  });
+  const yt = o.ylog ? (()=>{ const a=[]; for (let e=Math.ceil(y0); e<=y1+1e-9; e++) a.push(Math.pow(10,e)); return a; })() : niceTicks(o.ymin, o.ymax, 5);
+  yt.forEach(t=>{
+    el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),style:'stroke:var(--faint);stroke-width:1'},g);
+    el('text',{x:m.l-7,y:Y(t)+4,'text-anchor':'end','font-size':12,style:'fill:var(--muted)'},g, o.ylog ? (t>=1?String(t):'10'+String(Math.round(Math.log10(t))).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])) : String(t));
+  });
+  el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,style:'stroke:var(--muted);stroke-width:1'},g);
+  const lab = (t, str) => str.split(/(_\{[^}]*\})/).forEach(part=>{
+    if (part.startsWith('_{')) el('tspan',{'baseline-shift':'sub','font-size':10},t,part.slice(2,-1));
+    else if (part) el('tspan',{},t,part); });
+  lab(el('text',{x:(m.l+W-m.r)/2,y:H-8,'text-anchor':'middle','font-size':13,style:'fill:var(--ink)'},g), o.xlabel);
+  lab(el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle','font-size':13,transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`,style:'fill:var(--ink)'},g), o.ylabel);
+  const clip = 'c'+Math.random().toString(36).slice(2);
+  const cp = el('clipPath',{id:clip}, el('defs',{},svg)); el('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b},cp);
+  const gc = el('g',{'clip-path':`url(#${clip})`}, svg);
+  (o.series||[]).forEach(s=>{
+    const pts = s.pts.filter(p=>isFinite(p[1]) && (!o.ylog || p[1] > 0));
+    if (!pts.length) return;
+    el('path',{d:pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(2)+','+Y(p[1]).toFixed(2)).join(''),style:`fill:none;stroke:${s.color};stroke-width:${s.width||2.2};${s.dash?'stroke-dasharray:'+s.dash:''}`},gc);
+  });
+  (o.points||[]).forEach(p=>{
+    if (o.ylog && p.y <= 0) return;
+    el('circle',{cx:X(p.x),cy:Y(p.y),r:p.r||5,style:`fill:${p.color};stroke:var(--panel);stroke-width:1.5`},gc);
+  });
+  return {X, Y, g:gc};
+}
+const range = (a, b, n=300) => Array.from({length:n+1}, (_,i)=>a + (b-a)*i/n);
+
+/* ---------- canonical / grand canonical ---------- */
+function bisect(f, a, b, it=200){ let fa = f(a); for (let i=0;i<it;i++){ const m=(a+b)/2, fm=f(m); if ((fm>0)===(fa>0)){ a=m; fa=fm; } else b=m; } return (a+b)/2; }
+const qCan = x => { let s=0; for (let n=1;n<4000;n++){ const t = n*Math.pow(x,n)/(1-Math.pow(x,n)); s += t; if (t < 1e-14 && n > 5) break; } return s; };
+const qFD = x => { let s=0; for (let n=1;n<8000;n+=2){ const t = n/(Math.pow(x,-n/2)+1); s += t; if (t < 1e-14 && n > 5) break; } return s; };
+const xCan = q => bisect(x=>qCan(x)-q, 1e-9, 1-1e-9);
+const xFD = q => bisect(x=>qFD(x)-q, 1e-9, 1-1e-9);
+function nCan(kappa, x){ // kappa > 0
+  let s = 0; for (let i=1;i<200;i++){ const t = Math.pow(x, i*(kappa + i/2)); s += -Math.pow(-1,i)*t; if (t < 1e-16) break; } return s;
+}
+const nGC = (kappa, x) => 1/(Math.pow(x, -kappa)+1);
+
+/* ---------- state & rendering ---------- */
+const S = { q:6, log:false };
+let fitF = null, fitB = null;
+function render(){
+  const q = S.q;
+  $('qOut').textContent = q; $('wOut').textContent = Wq(q); $('qT').textContent = q;
+  drawGrids(q);
+  const F = fermionData(q), B = bosonData(q);
+  // Fermion fit
+  const xsF = F.levels.slice().reverse(), ysF = F.m.slice().reverse().map(v=>v/F.W);
+  const xsB = []; const ysB = [];
+  for (let j=1;j<=q+1;j++){ xsB.push(j); const r = B.levels.indexOf(j); ysB.push(r>=0 ? B.n[r]/B.W : 0); }
+  fitF = q >= 2 ? fitFD(xsF, ysF) : null;
+  fitB = q >= 2 ? fitBE(xsB, ysB) : null;
+  $('fdMu').textContent = fitF ? fmt(fitF.mu) : TX.small; $('fdT').textContent = fitF ? fmt(fitF.T) : TX.na; $('fdR').textContent = fitF ? fitF.sse.toExponential(2) : TX.na;
+  $('beMu').textContent = fitB ? fmt(fitB.mu) : TX.small; $('beT').textContent = fitB ? fmt(fitB.T) : TX.na; $('beR').textContent = fitB ? fitB.sse.toExponential(2) : TX.na;
+  renderFitPlots(xsF, ysF, xsB, ysB);
+  renderEntropy();
+  renderEnsembles();
+}
+function renderFitPlots(xsF, ysF, xsB, ysB){
+  const q = S.q;
+  const gFmu = +$('gFmu').value, gFT = +$('gFT').value, gBmu = +$('gBmu').value, gBT = +$('gBT').value;
+  $('gFmuOut').textContent = gFmu.toFixed(2); $('gFTOut').textContent = gFT.toFixed(2);
+  $('gBmuOut').textContent = gBmu.toFixed(2); $('gBTOut').textContent = gBT.toFixed(2);
+  const sseF = xsF.reduce((a,x,i)=>a + (fd(x,gFmu,gFT)-ysF[i])**2, 0);
+  const sseB = xsB.reduce((a,x,i)=>a + (be(x,gBmu,gBT)-ysB[i])**2, 0);
+  $('gFR').textContent = sseF.toExponential(2); $('gBR').textContent = sseB.toExponential(2);
+  const xa = -q-1.5, xb = q+2.5;
+  plot($('plotFD'), {xmin:xa, xmax:xb, ymin:0, ymax:1.05, xlabel:TX.xF, ylabel:TX.yF,
+    series:[
+      ...(fitF ? [{pts:range(xa,xb).map(x=>[x, fd(x, fitF.mu, fitF.T)]), color:'var(--fit)'}] : []),
+      {pts:range(xa,xb).map(x=>[x, fd(x, gFmu, gFT)]), color:'var(--guess)', dash:'6 4', width:2}
+    ],
+    points: xsF.map((x,i)=>({x, y:ysF[i], color:'var(--ferm)'}))});
+  const ymaxB = Math.max(1, ...ysB)*1.15;
+  plot($('plotBE'), {xmin:0.5, xmax:q+1.5, ymin:0, ymax:ymaxB, xlabel:TX.xB, ylabel:TX.yB,
+    series:[
+      ...(fitB ? [{pts:range(0.6,q+1.5).map(x=>[x, be(x, fitB.mu, fitB.T)]), color:'var(--fit)'}] : []),
+      {pts:range(0.6,q+1.5).map(x=>[x, be(x, gBmu, gBT)]), color:'var(--guess)', dash:'6 4', width:2}
+    ],
+    points: xsB.map((x,i)=>({x, y:ysB[i], color:'var(--bos)'}))});
+}
+function renderEntropy(){
+  const q = S.q, qmax = 12;
+  const Sv = []; for (let k=0;k<=qmax+1;k++) Sv.push(Math.log(Wq(k)));
+  const hr = range(0.5, qmax+0.5).map(x=>[x, Math.PI*Math.sqrt(2*x/3) - Math.log(4*Math.sqrt(3)*x)]);
+  const series = [{pts:hr, color:'var(--muted)', dash:'5 4', width:1.6}];
+  if (q >= 1){ const s = Sv[q]-Sv[q-1]; series.push({pts:[[q-1.6, Sv[q]-1.6*s],[q+1.6, Sv[q]+1.6*s]], color:'var(--ferm)', width:2.2}); }
+  if (q >= 1){ const s = (Sv[q+1]-Sv[q-1])/2; series.push({pts:[[q-1.6, Sv[q]-1.6*s],[q+1.6, Sv[q]+1.6*s]], color:'var(--bos)', width:2}); }
+  plot($('plotS'), {xmin:0, xmax:qmax+0.5, ymin:0, ymax:Math.ceil(Sv[qmax]+0.6), xlabel:TX.xS, ylabel:TX.yS, series,
+    points: Sv.slice(0, qmax+1).map((s,k)=>({x:k, y:s, color: k===q ? 'var(--hl)' : 'var(--ink)', r: k===q ? 7 : 4.5}))});
+  const back = q >= 1 && Sv[q] > Sv[q-1] ? 1/(Sv[q]-Sv[q-1]) : NaN;
+  const cen = q >= 1 ? 2/(Sv[q+1]-Sv[q-1]) : NaN;
+  $('tFD').textContent = fitF ? fmt(fitF.T, 2) : TX.na;
+  $('tBE').textContent = fitB ? fmt(fitB.T, 2) : TX.na;
+  $('tBack').textContent = fmt(back, 2);
+  $('tCen').textContent = fmt(cen, 2);
+  $('tTh').textContent = q >= 1 ? fmt(Math.sqrt(6*q)/Math.PI, 2) : TX.na;
+  $('tCan').textContent = q >= 1 ? fmt(-1/Math.log(xCan(q)), 2) : TX.na;
+  $('tGC').textContent = q >= 1 ? fmt(-1/Math.log(xFD(q)), 2) : TX.na;
+}
+function renderEnsembles(){
+  const q = S.q, F = fermionData(q), tb = $('ensRows');
+  while (tb.firstChild) tb.removeChild(tb.firstChild);
+  const xc = q >= 1 ? xCan(q) : null, xg = q >= 1 ? xFD(q) : null;
+  const kmax = q + 2.5, kap = []; for (let k = 0.5; k <= kmax; k += 1) kap.push(k);
+  const iso = kap.map(k => { const l = k + 0.5, r = F.levels.indexOf(l); return r >= 0 ? F.m[r]/F.W : 0; });
+  const can = kap.map(k => xc ? nCan(k, xc) : (k < 1 ? 0 : 0));
+  const gc = kap.map(k => xg ? nGC(k, xg) : 0);
+  kap.forEach((k,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${k.toFixed(1)}</td><td>${iso[i].toFixed(3)}</td><td>${xc?can[i].toFixed(3):TX.na}</td><td>${xg?gc[i].toFixed(3):TX.na}</td>`;
+    tb.appendChild(tr);
+  });
+  $('ensNote').textContent = TX.ensNote(q);
+  const ymin = S.log ? 1e-4 : 0, ymax = S.log ? 1 : 0.6;
+  const xs = range(0.3, kmax+0.2);
+  plot($('plotEns'), {xmin:0, xmax:kmax+0.5, ymin, ymax, ylog:S.log, xlabel:TX.xE, ylabel:TX.yE,
+    xticks: kap.filter((k,i)=>kap.length<=12 || i%2===0),
+    series: [
+      ...(xc ? [{pts:xs.map(x=>[x, nCan(x, xc)]), color:'var(--can)', width:2.4}] : []),
+      ...(xg ? [{pts:xs.map(x=>[x, nGC(x, xg)]), color:'var(--fit)', width:2, dash:'6 4'}] : [])
+    ],
+    points: kap.map((k,i)=>({x:k, y:iso[i], color:'var(--ferm)', r:5.5}))});
+}
+
+$('q').addEventListener('input', e=>{ S.q = +e.target.value; render(); });
+['gFmu','gFT','gBmu','gBT'].forEach(id => $(id).addEventListener('input', ()=>{
+  const q = S.q, F = fermionData(q), B = bosonData(q);
+  const xsF = F.levels.slice().reverse(), ysF = F.m.slice().reverse().map(v=>v/F.W);
+  const xsB = [], ysB = []; for (let j=1;j<=q+1;j++){ xsB.push(j); const r = B.levels.indexOf(j); ysB.push(r>=0 ? B.n[r]/B.W : 0); }
+  renderFitPlots(xsF, ysF, xsB, ysB);
+}));
+$('linBtn').addEventListener('click', ()=>{ S.log=false; $('linBtn').setAttribute('aria-pressed','true'); $('logBtn').setAttribute('aria-pressed','false'); renderEnsembles(); });
+$('logBtn').addEventListener('click', ()=>{ S.log=true; $('logBtn').setAttribute('aria-pressed','true'); $('linBtn').setAttribute('aria-pressed','false'); renderEnsembles(); });
+render();
+})();
+</script>
+<script>
+(() => {
+  // light/dark switch; the choice is remembered across all of the course demos
+  const btn = document.getElementById("themeBtn"), root = document.documentElement, mq = matchMedia("(prefers-color-scheme: dark)");
+  const KO = root.lang === "ko";
+  const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>';
+  const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>';
+  const current = () => root.dataset.theme || (mq.matches ? "dark" : "light");
+  const sync = () => { const dark = current() === "dark";
+    const label = dark ? (KO ? "밝은 화면으로 전환" : "Switch to light mode") : (KO ? "어두운 화면으로 전환" : "Switch to dark mode");
+    btn.innerHTML = dark ? SUN : MOON; btn.setAttribute("aria-label", label); btn.title = label; };
+  btn.addEventListener("click", () => { const next = current() === "dark" ? "light" : "dark"; root.dataset.theme = next;
+    try { localStorage.setItem("netsci-theme", next); } catch (e) {} sync(); });
+  mq.addEventListener("change", sync);
+  sync();
+})();
+</script>
+</body>
+</html>
