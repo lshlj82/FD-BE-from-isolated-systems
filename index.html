@@ -58,7 +58,7 @@ a{color:var(--ferm)}
 .course a{color:inherit}
 .langlink{font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);border-radius:999px;padding:.38rem .9rem;color:var(--ink);text-decoration:none;background:var(--bg)}
 .langlink:hover{border-color:var(--ink)}
-.mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
+mjx-container[display="true"]{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:.2rem 0}
 button.theme-btn{position:fixed;z-index:20;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);
   width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;
   background:var(--panel);color:var(--ink);border:1px solid var(--rule);box-shadow:0 1px 4px rgba(0,0,0,.12)}
@@ -85,7 +85,8 @@ button.pill:hover{border-color:var(--ink)}
 .gridhead .ferm{color:var(--ferm)} .gridhead .bos{color:var(--bos)}
 svg text{font-family:var(--sans)}
 .cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem}
-@media (max-width:860px){.cols2{grid-template-columns:1fr}}
+.cols2 > *{min-width:0}
+@media (max-width:860px){.cols2{grid-template-columns:minmax(0,1fr)}}
 .cols2 h3{font-family:var(--sans);font-size:1rem;margin:.1rem 0 .4rem}
 .kv{font-family:var(--sans);font-size:.9rem;font-variant-numeric:tabular-nums;margin:.5rem 0;display:grid;grid-template-columns:auto auto;gap:.15rem 1rem;justify-content:start}
 .kv dt{color:var(--muted)} .kv dd{margin:0}
@@ -186,7 +187,7 @@ footer li{margin:.35rem 0}
 <h3>Fitting with Python</h3>
 <p>Any tool that does nonlinear least squares will do. With SciPy, for \(q = 6\):</p>
 </div>
-<pre><code>import numpy as np
+<pre tabindex="0"><code>import numpy as np
 from scipy.optimize import curve_fit
 
 # Fermions: level energies measured from the top level filled at q = 0
@@ -220,7 +221,7 @@ print(mu, T)          # -0.040  2.284</code></pre>
     </div>
     <div>
       <p style="margin-top:0">Temperature estimates at \(q =\) <b id="qT"></b>, in units of \(\epsilon/k_B\):</p>
-      <div class="tablewrap" style="margin-top:.4rem">
+      <div class="tablewrap" tabindex="0" style="margin-top:.4rem">
         <table>
           <tbody>
             <tr><td>Fermi–Dirac fit</td><td id="tFD"></td></tr>
@@ -250,7 +251,7 @@ print(mu, T)          # -0.040  2.284</code></pre>
     <div class="seg" role="group" aria-label="Vertical scale"><button id="linBtn" aria-pressed="true">Linear</button><button id="logBtn" aria-pressed="false">Log</button></div>
   </div>
   <svg id="plotEns" viewBox="0 0 1000 340" role="img" aria-label="Occupancies in the three ensembles"></svg>
-  <div class="tablewrap">
+  <div class="tablewrap" tabindex="0">
     <table>
       <thead><tr><th>\(\kappa\)</th><th>Isolated</th><th>Canonical</th><th>Grand canonical</th></tr></thead>
       <tbody id="ensRows"></tbody>
@@ -316,6 +317,16 @@ function partitions(n){
   return (partCache[n] = out);
 }
 const Wq = q => q < 0 ? 0 : partitions(q).length;
+// per-q occupancy data, computed once and shared by the grids, fits, guesses and ensemble table
+const qCache = {};
+function qData(q){
+  if (qCache[q]) return qCache[q];
+  const F = fermionData(q), B = bosonData(q);
+  const xsF = F.levels.slice().reverse(), ysF = F.m.slice().reverse().map(v=>v/F.W);
+  const xsB = [], ysB = [];
+  for (let j=1;j<=q+1;j++){ xsB.push(j); ysB.push(j <= q ? B.n[q-j]/B.W : 0); } // B.levels[q-j] === j
+  return (qCache[q] = {F, B, xsF, ysF, xsB, ysB});
+}
 
 /* ---------- exact occupancies ---------- */
 // Fermions: level l relative to the top level filled at q = 0 (l = 0); rows l = -q ... q+1
@@ -327,7 +338,9 @@ function fermionData(q){
     for (let i = 0; i <= q+1; i++) s.add(-i + (lam[i] || 0));
     return s;
   });
-  const m = levels.map(l => occ.reduce((a,s)=>a + (s.has(l)?1:0), 0));
+  // levels run q+1, q, ..., -q, so level l sits at row q+1-l
+  const m = new Array(levels.length).fill(0);
+  occ.forEach(s => s.forEach(l => { const r = q+1-l; if (r >= 0 && r < m.length) m[r]++; }));
   return {P, W, levels, occ, m};
 }
 // Bosons: levels j = 0 ... q; multiplicity of part j
@@ -335,7 +348,9 @@ function bosonData(q){
   const P = partitions(q), W = P.length, levels = [];
   for (let j = q; j >= 0; j--) levels.push(j);
   const cnt = P.map(lam => { const c = {}; lam.forEach(v => c[v] = (c[v]||0)+1); return c; });
-  const n = levels.map(j => j === 0 ? null : cnt.reduce((a,c)=>a + (c[j]||0), 0));
+  // levels run q, ..., 0, so level j sits at row q-j
+  const n = levels.map(j => j === 0 ? null : 0);
+  P.forEach(lam => lam.forEach(v => n[q-v]++));
   const parts = P.reduce((a,l)=>a + l.length, 0);
   return {P, W, levels, cnt, n, parts};
 }
@@ -344,7 +359,7 @@ function bosonData(q){
 let hoverCol = -1;
 function frac(a, W){ return W === 1 ? String(a) : (a === 0 ? '0' : a + '/' + W); }
 function drawGrids(q){
-  const F = fermionData(q), B = bosonData(q), W = F.W;
+  const {F, B} = qData(q), W = F.W;
   const colW = 25, labW = 40, occW = 92, pad = 10;
   // Fermions
   const rowH = 17, svgF = $('gridF');
@@ -509,11 +524,7 @@ function render(){
   const q = S.q;
   $('qOut').textContent = q; $('wOut').textContent = Wq(q); $('qT').textContent = q;
   drawGrids(q);
-  const F = fermionData(q), B = bosonData(q);
-  // Fermion fit
-  const xsF = F.levels.slice().reverse(), ysF = F.m.slice().reverse().map(v=>v/F.W);
-  const xsB = []; const ysB = [];
-  for (let j=1;j<=q+1;j++){ xsB.push(j); const r = B.levels.indexOf(j); ysB.push(r>=0 ? B.n[r]/B.W : 0); }
+  const {xsF, ysF, xsB, ysB} = qData(q);
   fitF = q >= 2 ? fitFD(xsF, ysF) : null;
   fitB = q >= 2 ? fitBE(xsB, ysB) : null;
   $('fdMu').textContent = fitF ? fmt(fitF.mu) : TX.small; $('fdT').textContent = fitF ? fmt(fitF.T) : TX.na; $('fdR').textContent = fitF ? fitF.sse.toExponential(2) : TX.na;
@@ -565,11 +576,11 @@ function renderEntropy(){
   $('tGC').textContent = q >= 1 ? fmt(-1/Math.log(xFD(q)), 2) : TX.na;
 }
 function renderEnsembles(){
-  const q = S.q, F = fermionData(q), tb = $('ensRows');
+  const q = S.q, F = qData(q).F, tb = $('ensRows');
   while (tb.firstChild) tb.removeChild(tb.firstChild);
   const xc = q >= 1 ? xCan(q) : null, xg = q >= 1 ? xFD(q) : null;
   const kmax = q + 2.5, kap = []; for (let k = 0.5; k <= kmax; k += 1) kap.push(k);
-  const iso = kap.map(k => { const l = k + 0.5, r = F.levels.indexOf(l); return r >= 0 ? F.m[r]/F.W : 0; });
+  const iso = kap.map(k => { const r = q + 0.5 - k; return r >= 0 && r < F.m.length ? F.m[r]/F.W : 0; }); // level l = k + 0.5 is row q+1-l
   const can = kap.map(k => xc ? nCan(k, xc) : (k < 1 ? 0 : 0));
   const gc = kap.map(k => xg ? nGC(k, xg) : 0);
   kap.forEach((k,i)=>{
@@ -591,9 +602,7 @@ function renderEnsembles(){
 
 $('q').addEventListener('input', e=>{ S.q = +e.target.value; render(); });
 ['gFmu','gFT','gBmu','gBT'].forEach(id => $(id).addEventListener('input', ()=>{
-  const q = S.q, F = fermionData(q), B = bosonData(q);
-  const xsF = F.levels.slice().reverse(), ysF = F.m.slice().reverse().map(v=>v/F.W);
-  const xsB = [], ysB = []; for (let j=1;j<=q+1;j++){ xsB.push(j); const r = B.levels.indexOf(j); ysB.push(r>=0 ? B.n[r]/B.W : 0); }
+  const {xsF, ysF, xsB, ysB} = qData(S.q);
   renderFitPlots(xsF, ysF, xsB, ysB);
 }));
 $('linBtn').addEventListener('click', ()=>{ S.log=false; $('linBtn').setAttribute('aria-pressed','true'); $('logBtn').setAttribute('aria-pressed','false'); renderEnsembles(); });
