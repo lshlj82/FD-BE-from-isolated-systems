@@ -4,7 +4,7 @@ An interactive web page on small Fermi and Bose systems with evenly spaced, nond
 
 The page is supplementary material for the Statistical Physics 2 lecture on quantum statistics, and is meant to join the [Statistical Physics 2 interactive demos](https://lshlj82.github.io/statphys2-GNU/) ([source](https://github.com/lshlj82/statphys2-GNU)), as demo 4+ after [Boson vs Fermion](https://lshlj82.github.io/boson-vs-fermion/).
 
-**Live page:** https://lshlj82.github.io/FD-BE-from-isolated-systems/ (Korean: https://lshlj82.github.io/FD-BE-from-isolated-systems/ko.html) It follows Problems 7.16 and 7.17 of D. V. Schroeder's *An Introduction to Thermal Physics* and the article by Arnaud *et al.* on which they are based. It is available in English (`index.html`) and Korean (`ko.html`), and each page links to the other.
+**Live page:** https://lshlj82.github.io/FD-BE-from-isolated-systems/ (Korean: https://lshlj82.github.io/FD-BE-from-isolated-systems/ko.html) It follows Problems 7.16 and 7.17 of D. V. Schroeder's *An Introduction to Thermal Physics* and the article by Arnaud *et al.* on which they are based. It is available in English (`index.html`) and Korean (`ko.html`). The EN / 한국어 button at the top right switches between them, and the choice is remembered across the course demos (`lshlj82-demo-lang` in local storage), so opening `index.html` after choosing Korean on any demo goes straight to `ko.html`.
 
 ## What's on the page
 
@@ -25,7 +25,7 @@ Each language version is a single self-contained HTML file with no build step. O
 The page loads two things from the network:
 
 - [MathJax 3.2.2](https://www.mathjax.org/) from cdnjs, for equations;
-- fonts from Google Fonts: Source Serif 4, IBM Plex Sans, IBM Plex Mono, IBM Plex Sans KR, and Noto Serif KR. Without a connection it falls back to system fonts.
+- fonts from Google Fonts: Source Serif 4, IBM Plex Sans, IBM Plex Mono, and IBM Plex Sans KR (used for all text on the Korean page). Without a connection it falls back to system fonts.
 
 Partitions, fits, and ensemble sums are computed in plain JavaScript, and plots are drawn as SVG. The light/dark button uses the same stored setting (`netsci-theme`) as the other course demos.
 

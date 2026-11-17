@@ -2,11 +2,27 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<!-- lang-toggle:head -->
+<script>(function(){var me="ko",p=null;try{p=localStorage.getItem("lshlj82-demo-lang")}catch(e){}if(p&&p!==me&&!/[?&]stay\b/.test(location.search)){location.replace("index.html"+location.hash);}document.documentElement.dataset.lang=me;})();</script>
+<style>
+#langBtn{position:fixed;z-index:21;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 60px);
+  min-width:40px;height:40px;padding:0 10px;border-radius:20px;display:grid;place-items:center;cursor:pointer;font:600 14px/1 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  background:var(--lb-bg,rgba(255,255,255,.92));color:var(--lb-fg,#1d2633);border:1px solid var(--lb-bd,rgba(20,30,45,.18));box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#langBtn{text-decoration:none}
+#langBtn:hover{border-color:currentColor}
+#langBtn:focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
+:root[data-theme="dark"] #langBtn{--lb-bg:rgba(22,28,38,.92);--lb-fg:#e8eef6;--lb-bd:rgba(255,255,255,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #langBtn{--lb-bg:rgba(22,28,38,.92);--lb-fg:#e8eef6;--lb-bd:rgba(255,255,255,.18)}}
+:root[data-lang="ko"] body{word-break:keep-all}
+@media print{#langBtn{display:none}}
+@media (max-width:720px){.topbar{padding-right:92px}}
+</style>
+<!-- lang-toggle:head-end -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>등간격 사다리 위의 페르미온과 보손</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
 <script>try { const t = localStorage.getItem("netsci-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <script>
 window.MathJax = {
@@ -21,8 +37,8 @@ window.MathJax = {
   --bg:#F3F5F7; --panel:#FFFFFF; --ink:#1C2331; --muted:#5A6476; --rule:#D3D8DF; --faint:#E7EBF0;
   --ferm:#2766A8; --ferm-soft:#DCE8F5; --bos:#B4581B; --bos-soft:#F6E2D2; --fit:#1C2331; --guess:#8A5DB0;
   --can:#2E7D4F; --hl:#F5E15A;
-  --serif:"Source Serif 4","Source Serif Pro","Noto Serif KR","Apple SD Gothic Neo",Georgia,serif;
-  --sans:"IBM Plex Sans","IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
@@ -113,11 +129,14 @@ footer li{margin:.35rem 0}
 </style>
 </head>
 <body>
+<!-- lang-toggle:body -->
+<a id="langBtn" href="index.html" hreflang="en" lang="en" aria-label="View in English" title="View in English">EN</a>
+<script>document.getElementById("langBtn").addEventListener("click",function(){try{localStorage.setItem("lshlj82-demo-lang","en")}catch(e){}});</script>
+<!-- lang-toggle:body-end -->
 <button id="themeBtn" class="theme-btn" type="button" aria-label="어두운 화면으로 전환"></button>
 <main>
 <header class="topbar">
   <p class="course"><a href="https://lshlj82.github.io/statphys2-GNU/">통계물리 2</a> 보충 자료: 세어서 얻는 양자 통계</p>
-  <a class="langlink" href="index.html" hreflang="en" lang="en">English</a>
 </header>
 <h1>등간격 사다리 위의 페르미온과 보손</h1>
 <p class="lede">에너지 준위가 등간격이면, 작은 페르미 계와 보스 계의 미시 상태 하나하나가 정수의 분할(partition)이 됩니다. 이를 세고 평균을 내면, 에너지 단위가 몇 개뿐일 때에도 페르미–디랙 분포와 보스–아인슈타인 분포가 모습을 드러내기 시작합니다.</p>
